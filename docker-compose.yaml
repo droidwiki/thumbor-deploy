@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  thumbor:
+    stop_grace_period: 5s
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+    image: minimalcompact/thumbor
+    environment:
+      - LOADER=thumbor.loaders.file_loader
+      - FILE_LOADER_ROOT_PATH=/images
+      - STORAGE=thumbor.storages.file_storage
+      # Piloting, not saving generated files for now
+      - RESULT_STORAGE=thumbor.result_storages.no_storage
+      - RESULT_STORAGE_FILE_STORAGE_ROOT_PATH=/images
+      - RESULT_STORAGE_STORES_UNSAFE=True
+    ports:
+      - "8181:80"
+    volumes:
+      - /data/shareddata/mediawiki/images:/images
